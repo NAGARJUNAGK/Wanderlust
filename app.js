@@ -9,11 +9,14 @@ const session = require("express-session");//for statefulness
 const flash = require("connect-flash");//generates alert messages
 const passport = require("passport");//for authentication and authorization
 const LocalStrategy = require("passport-local");//username password autentication
-const User = require("./models/user.js");
+const User = require("./models/user.js");//user authentication schema
+const wrapAsync = require("./utils/wrapAsync.js");
 
 //routes
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
+
 
 //middlewares
 app.set("view engine", "ejs");
@@ -74,19 +77,20 @@ app.get("/", (req, res) => {
   res.send("Hi, I am root");
 });
 
-app.get("/demouser",async(req,res)=>{
-  let fakeUser = new User({
-    email:"student@gmail.com",
-    username:"delta-student"
-  });
-  let registeredUser = await User.register(fakeUser,"helloworld");
-  console.log(registeredUser);
-  res.send(registeredUser); 
-});
+// app.get("/demouser",wrapAsync(async(req,res)=>{
+//   let fakeUser = new User({
+//     email:"student@gmail.com",
+//     username:"delta-student"
+//   });
+//   let registeredUser = await User.register(fakeUser,"helloworld");
+//   console.log(registeredUser);
+//   res.send(registeredUser); 
+// }));
 
 // getting routes from other sources
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
+app.use("/",userRouter);
 
 // app.get("/testlisting",async (req,res)=>{
 //   let sampleListing = new Listing({
