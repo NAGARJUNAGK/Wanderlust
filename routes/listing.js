@@ -5,18 +5,7 @@ const ExpressError = require("../utils/ExpressError.js"); //generating errors
 const { listingSchema, reviewSchema } = require("../schema.js");
 const Listing = require("../models/listing.js");
 const passport = require("passport");
-const { isLoggedIn } = require("../middleware.js");
-
-// middelware for server side validation for listing
-const validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  console.log(error);
-  if (error) {
-    throw new ExpressError(400, error);
-  } else {
-    next();
-  }
-};
+const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 
 // index listing page
 router.get(
@@ -38,13 +27,12 @@ router.get(
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id)
-      .populate("review")
+      .populate({ path: "review", populate: { path: "author" } })
       .populate("owner");
     if (!listing) {
       req.flash("error", "listing you requested does not exist");
       res.redirect("/listings");
     }
-    console.log(listing);
     res.render("listings/show.ejs", { listing });
   })
 );
@@ -66,6 +54,7 @@ router.post(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
@@ -82,6 +71,7 @@ router.put(
   "/:id",
   isLoggedIn,
   validateListing,
+  isOwner,
   wrapAsync(async (req, res) => {
     if (!req.body.listing) {
       throw new ExpressError(400, "Send valid data for listings");
@@ -97,6 +87,7 @@ router.put(
 router.delete(
   "/:id",
   isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
