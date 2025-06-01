@@ -11,13 +11,13 @@
         alt="listing_image"
       />
       <div class="card-body">
-        <p class="card-text">
-          <%=listing.description%><br />
-          &#8377;<%=listing.price ? listing.price.toLocaleString("en-IN") :
-          "N/A"%><br />
-          <%=listing.location%><br />
-          <%=listing.country%><br />
-        </p>
+        <p class="card-text"><%=listing.owner.username%></p>
+        <p class="card-text"><%=listing.description%></p>
+         <p class="card-text"></p> &#8377;<%=listing.price ? listing.price.toLocaleString("en-IN") :
+          "N/A"%></p>
+          <p class="card-text"></p><%=listing.location%></p>
+          <p class="card-text"></p><%=listing.country%></p>
+        
       </div>
     </div>
   </div>
