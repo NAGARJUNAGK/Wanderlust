@@ -7,11 +7,16 @@ const Listing = require("../models/listing.js");
 const passport = require("passport");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 const listingControllers = require("../controllers/listing.js");
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/'})
 
 router
   .route("/")
   .get(wrapAsync(listingControllers.index)) //index route
-  .post(validateListing, wrapAsync(listingControllers.createListing)); //create route
+  // .post(validateListing, wrapAsync(listingControllers.createListing)); //create route
+  .post(upload.single('listing[image]'),(req,res)=>{
+    res.send(req.file);
+  });
 
 // New route
 router.get("/new", isLoggedIn, listingControllers.renderNewForm);
