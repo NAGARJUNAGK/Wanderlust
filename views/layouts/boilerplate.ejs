@@ -24,11 +24,21 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+    <!-- MapLibre CSS (already included probably) -->
+    <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet" />
+    <!-- MapTiler Geocoding Control CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@maptiler/geocoding-control@latest/dist/style.css" rel="stylesheet" />
   </head>
   <body>
     <%- include("../includes/navbar.ejs")%>
 
-    <div class="container"><%- include("../includes/flash.ejs")%><%- body -%></div>
+    <div class="container">
+      <%- include("../includes/flash.ejs")%><%- body -%>
+    </div>
 
     <%- include("../includes/footer.ejs")%>
 
@@ -38,5 +48,8 @@
       crossorigin="anonymous"
     ></script>
     <script src="/js/script.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+    <!-- MapTiler Geocoding Control JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@maptiler/geocoding-control@latest/dist/index.umd.js"></script>
   </body>
 </html>

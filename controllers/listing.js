@@ -18,7 +18,7 @@ module.exports.showListing = async (req, res) => {
     req.flash("error", "listing you requested does not exist");
     res.redirect("/listings");
   }
-  res.render("listings/show.ejs", { listing });
+  res.render("listings/show.ejs", { listing , mapTilerKey: process.env.MAPTILER_API_KEY });
 };
 
 module.exports.createListing = async (req, res, next) => {

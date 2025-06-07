@@ -102,3 +102,9 @@ body{
 .edit-btn{
     height: 2.3rem;
 }
+
+#map {
+      width: 100%;
+      height: 400px;
+      margin-top: 20px;
+    }
