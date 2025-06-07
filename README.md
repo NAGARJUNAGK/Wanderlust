@@ -24,5 +24,4 @@
 | Cloudinary | Image upload and hosting      |
 | Bootstrap  | UI Styling and responsiveness |
 
-## 📂 Project Structure
 
