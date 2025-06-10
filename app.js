@@ -10,17 +10,34 @@ const methodOverride = require("method-override"); //converting request
 const ejsMate = require("ejs-mate"); //creating layout
 const ExpressError = require("./utils/ExpressError.js"); //generating errors
 const session = require("express-session");//for statefulness
+const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");//generates alert messages
 const passport = require("passport");//for authentication and authorization
 const LocalStrategy = require("passport-local");//username password autentication
 const User = require("./models/user.js");//user authentication schema
 const wrapAsync = require("./utils/wrapAsync.js");
 
+
 //routes
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
+// mongoose connection
+// const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.ATLASDB_URL;
+
+main()
+  .then(() => {
+    console.log("connected to DB");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+async function main() {
+  await mongoose.connect(dbUrl);
+}
 
 //middlewares
 app.set("view engine", "ejs");
@@ -30,9 +47,22 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SECRET
+  },
+  touchAfter: 24*3600
+});
+
+store.on("error",()=>{
+  console.log("ERROR IN MONGO SESSION STORE");
+})
+
 //declearing session options
 const sessionOptions = {
-  secret : "mysupersecretstring",
+  store,
+  secret : process.env.SECRET,
   resave : false,
   saveUninitialized:true,
   cookie:{
@@ -62,54 +92,10 @@ app.use((req,res,next)=>{
   next();
 })
 
-
-// mongoose connection
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-
-main()
-  .then(() => {
-    console.log("connected to DB");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-async function main() {
-  await mongoose.connect(MONGO_URL);
-}
-
-// app.get("/", (req, res) => {
-//   res.send("Hi, I am root");
-// });
-
-// app.get("/demouser",wrapAsync(async(req,res)=>{
-//   let fakeUser = new User({
-//     email:"student@gmail.com",
-//     username:"delta-student"
-//   });
-//   let registeredUser = await User.register(fakeUser,"helloworld");
-//   console.log(registeredUser);
-//   res.send(registeredUser); 
-// }));
-
 // getting routes from other sources
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
-
-// app.get("/testlisting",async (req,res)=>{
-//   let sampleListing = new Listing({
-//     title : "My new villa",
-//     description : "by the beach",
-//     price : 1200,
-//     location : "goa",
-//     country : "India",
-//   });
-
-//   await sampleListing.save();
-//   console.log("sample was saved");
-//   res.send("successful testing");
-// })
 
 // Error if there is no route present
 app.all("*", (req, res, next) => {
